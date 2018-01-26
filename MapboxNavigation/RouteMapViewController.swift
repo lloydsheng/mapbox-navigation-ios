@@ -701,9 +701,9 @@ extension RouteMapViewController: NavigationMapViewDelegate {
         if let mapboxSteetsSource = streetsSources.first, style.layer(withIdentifier: roadLabelLayerIdentifier) == nil {
             let streetLabelLayer = MGLLineStyleLayer(identifier: roadLabelLayerIdentifier, source: mapboxSteetsSource)
             streetLabelLayer.sourceLayerIdentifier = "road_label"
-            streetLabelLayer.lineOpacity = MGLStyleValue(rawValue: 1)
-            streetLabelLayer.lineWidth = MGLStyleValue(rawValue: 20)
-            streetLabelLayer.lineColor = MGLStyleValue(rawValue: .white)
+            streetLabelLayer.lineOpacity = NSExpression(forConstantValue: 1)
+            streetLabelLayer.lineWidth = NSExpression(forConstantValue: 20)
+            streetLabelLayer.lineColor = NSExpression(forConstantValue: UIColor.white)
             style.insertLayer(streetLabelLayer, at: 0)
         }
         
