@@ -1,4 +1,4 @@
-binary "https://www.mapbox.com/ios-sdk/Mapbox-iOS-SDK.json" "3.7.3"
+binary "https://www.mapbox.com/ios-sdk/Mapbox-iOS-SDK.json" "3.1.0-pre.1"
 github "ceeK/Solar" "2.1.0"
 github "facebook/ios-snapshot-test-case" "2.1.4"
 github "frederoni/aws-sdk-ios" "2.6.5"
