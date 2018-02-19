@@ -163,6 +163,17 @@ public protocol NavigationViewControllerDelegate {
      Returns the center point of the user course view in screen coordinates relative to the map view.
      */
     @objc optional func navigationViewController(_ navigationViewController: NavigationViewController, mapViewUserAnchorPoint mapView: NavigationMapView) -> CGPoint
+    
+    /**
+     Called when a location has been idenetified as unqualified to navigate on.
+     
+     See `CLLocation.isQualified` for more information about what qualifies a location.
+     
+     - parameter navigationViewController: The navigation view controller that discarded the location.
+     - parameter location: The location that will be discarded.
+     - return: If `true`, the location is discarded and the `NavigationViewController` will not consider it. If `false`, the location will not be thrown out.
+     */
+    @objc optional func navigationViewController(_ navigationViewController: NavigationViewController, shouldDiscard location: CLLocation) -> Bool
 }
 
 /**
@@ -186,6 +197,7 @@ public class NavigationViewController: UIViewController, RouteMapViewControllerD
             } else {
                 routeController.routeProgress = RouteProgress(route: route)
             }
+            NavigationSettings.shared.distanceUnit = route.routeOptions.locale.usesMetric ? .kilometer : .mile
             mapViewController?.notifyDidReroute(route: route)
         }
     }
@@ -221,7 +233,7 @@ public class NavigationViewController: UIViewController, RouteMapViewControllerD
      
      See `RouteVoiceController` for more information.
      */
-    @objc public var voiceController: RouteVoiceController? = RouteVoiceController()
+    @objc public var voiceController: RouteVoiceController? = MapboxVoiceController()
     
     /**
      Provides all routing logic for the user.
@@ -319,6 +331,7 @@ public class NavigationViewController: UIViewController, RouteMapViewControllerD
         
         self.directions = directions
         self.route = route
+        NavigationSettings.shared.distanceUnit = route.routeOptions.locale.usesMetric ? .kilometer : .mile
         
         addChildViewController(mapViewController)
         mapViewController.view.translatesAutoresizingMaskIntoConstraints = false
@@ -381,9 +394,9 @@ public class NavigationViewController: UIViewController, RouteMapViewControllerD
     }
     
     @objc func progressDidChange(notification: NSNotification) {
-        let routeProgress = notification.userInfo![MBRouteControllerDidPassSpokenInstructionPointRouteProgressKey] as! RouteProgress
-        let location = notification.userInfo![RouteControllerProgressDidChangeNotificationLocationKey] as! CLLocation
-        let secondsRemaining = notification.userInfo![RouteControllerProgressDidChangeNotificationSecondsRemainingOnStepKey] as! TimeInterval
+        let routeProgress = notification.userInfo![RouteControllerNotificationUserInfoKey.routeProgressKey] as! RouteProgress
+        let location = notification.userInfo![RouteControllerNotificationUserInfoKey.locationKey] as! CLLocation
+        let secondsRemaining = routeProgress.currentLegProgress.currentStepProgress.durationRemaining
 
         mapViewController?.notifyDidChange(routeProgress: routeProgress, location: location, secondsRemaining: secondsRemaining)
         
@@ -391,7 +404,7 @@ public class NavigationViewController: UIViewController, RouteMapViewControllerD
     }
     
     @objc func didPassInstructionPoint(notification: NSNotification) {
-        let routeProgress = notification.userInfo![MBRouteControllerDidPassSpokenInstructionPointRouteProgressKey] as! RouteProgress
+        let routeProgress = notification.userInfo![RouteControllerNotificationUserInfoKey.routeProgressKey] as! RouteProgress
         
         mapViewController?.updateMapOverlays(for: routeProgress)
         mapViewController?.updateCameraAltitude(for: routeProgress)
@@ -528,9 +541,16 @@ extension NavigationViewController: RouteControllerDelegate {
         }
     }
     
-    @objc public func routeController(_ routeController: RouteController, didDiscard location: CLLocation) {
-        let title = NSLocalizedString("WEAK_GPS", bundle: .mapboxNavigation, value: "Weak GPS signal", comment: "Inform user about weak GPS signal")
-        mapViewController?.statusView.show(title, showSpinner: false)
+    @objc public func routeController(_ routeController: RouteController, shouldDiscard location: CLLocation)  -> Bool {
+        let shouldDiscard = delegate?.navigationViewController?(self, shouldDiscard: location) ?? true
+        
+        if shouldDiscard {
+            let title = NSLocalizedString("WEAK_GPS", bundle: .mapboxNavigation, value: "Weak GPS signal", comment: "Inform user about weak GPS signal")
+            mapViewController?.statusView.show(title, showSpinner: false)
+            return true
+        }
+        
+        return false
     }
     
     @objc public func routeController(_ routeController: RouteController, didArriveAt waypoint: Waypoint) -> Bool {
