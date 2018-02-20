@@ -76,6 +76,16 @@ open class NavigationMapView: MGLMapView, UIGestureRecognizerDelegate {
     let alternateSourceIdentifier = "alternateSource"
     let alternateLayerIdentifier = "alternateLayer"
     
+    /**
+     Attribute name for the route line that is used for identifying whether a RouteLeg is the current active leg.
+     */
+    public let currentLegAttribute = "isCurrentLeg"
+    
+    /**
+     Attribute name for the route line that is used for identifying different `CongestionLevel` along the route.
+     */
+    public let congestionAttribute = "congestion"
+    
     @objc dynamic public var trafficUnknownColor: UIColor = .trafficUnknown
     @objc dynamic public var trafficLowColor: UIColor = .trafficLow
     @objc dynamic public var trafficModerateColor: UIColor = .trafficModerate
@@ -1005,24 +1015,25 @@ open class NavigationMapView: MGLMapView, UIGestureRecognizerDelegate {
             } else {
                 token = "{name}"
             }
-            
-            if let value = layer.text as? MGLConstantStyleValue<NSString>, value.rawValue.contains("{name") {
-                layer.text = MGLStyleValue(rawValue: token as NSString)
-            } else if let function = layer.text as? MGLCameraStyleFunction<NSString> {
-                var localizedStops = function.stops
-                var hasName = false
-                for (zoomLevel, value) in localizedStops {
-                    let value = value as! MGLConstantStyleValue<NSString>
-                    if value.rawValue.contains("{name") {
-                        hasName = true
-                        localizedStops[zoomLevel] = MGLStyleValue(rawValue: token as NSString)
-                    }
-                }
-                if hasName {
-                    function.stops = localizedStops
-                    layer.text = function
-                }
-            }
+
+// TODO:
+//            if let value = layer.text, let _ = value.value(forKey: "{name}") {
+//                layer.text = NSExpression(forConstantValue: token as NSString)
+//            } else if let function = layer.text as? NSExpression<NSString> {
+//                var localizedStops = function.stops
+//                var hasName = false
+//                for (zoomLevel, value) in localizedStops {
+//                    let value = value as! MGLConstantStyleValue<NSString>
+//                    if value.rawValue.contains("{name") {
+//                        hasName = true
+//                        localizedStops[zoomLevel] = MGLStyleValue(rawValue: token as NSString)
+//                    }
+//                }
+//                if hasName {
+//                    function.stops = localizedStops
+//                    layer.text = function
+//                }
+//            }
         }
     }
     
