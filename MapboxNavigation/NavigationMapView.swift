@@ -932,7 +932,7 @@ open class NavigationMapView: MGLMapView, UIGestureRecognizerDelegate {
         let line = MGLLineStyleLayer(identifier: identifier, source: source)
         line.lineWidth = NSExpression(format: "FUNCTION($zoomLevel, 'mgl_interpolateWithCurveType:parameters:stops:', 'linear', nil, %@)", argumentArray: [routeLineWidthAtZoomLevels])
         
-        lineCasing.lineOpacity = NSExpression(forConditional: NSPredicate(format: "currentLegAttribute == true"), trueExpression: NSExpression(forConstantValue: 1), falseExpression: NSExpression(forConstantValue: 0.85))
+        line.lineOpacity = NSExpression(forConditional: NSPredicate(format: "currentLegAttribute == true"), trueExpression: NSExpression(forConstantValue: 1), falseExpression: NSExpression(forConstantValue: 0.85))
 
         line.lineColor = NSExpression(format: "%@.severe", [
                 "unknown": trafficUnknownColor,
