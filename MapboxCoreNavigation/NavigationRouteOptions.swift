@@ -55,3 +55,29 @@ open class NavigationRouteOptions: RouteOptions {
         super.init(coder: decoder)
     }
 }
+
+@objc(MBNavigationMatchOptions)
+open class NavigationMatchOptions: MatchingOptions {
+    
+    @objc public required init(waypoints: [Waypoint], profileIdentifier: MBDirectionsProfileIdentifier? = .automobileAvoidingTraffic) {
+        super.init(waypoints: waypoints.map {
+            $0.coordinateAccuracy = -1
+            return $0
+        }, profileIdentifier: profileIdentifier)
+        includesSteps = true
+        routeShapeResolution = .full
+        attributeOptions = [.congestionLevel, .expectedTravelTime]
+        includesSpokenInstructions = true
+        locale = Locale.nationalizedCurrent
+        distanceMeasurementSystem = Locale.current.usesMetricSystem ? .metric : .imperial
+        includesVisualInstructions = true
+    }
+    
+    @objc public convenience init(locations: [CLLocation], profileIdentifier: MBDirectionsProfileIdentifier? = .automobileAvoidingTraffic) {
+        self.init(waypoints: locations.map { Waypoint(location: $0) }, profileIdentifier: profileIdentifier)
+    }
+    
+    @objc public convenience init(coordinates: [CLLocationCoordinate2D], profileIdentifier: MBDirectionsProfileIdentifier? = .automobileAvoidingTraffic) {
+        self.init(waypoints: coordinates.map { Waypoint(coordinate: $0) }, profileIdentifier: profileIdentifier)
+    }
+}
