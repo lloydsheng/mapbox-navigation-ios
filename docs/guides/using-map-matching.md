@@ -1,4 +1,4 @@
-In some cases, a developer may want to have the user stick to a very specific route and one that does not fit into the scope covered by the Mapbox Directions API. For example, a company would like to use their custom truck routing API but allow people to navigate on it with the Mapbox Navigation SDK. In this case, the Mapbox Map Matching API is an appropriate fit.
+In some cases, a developer may want to have the user stick to a very specific route, one that does not fit into the scope covered by the Mapbox Directions API. For example, a company would like to use their custom truck routing API but allow people to navigate on it with the Mapbox Navigation SDK. In this case, the Mapbox Map Matching API is an appropriate fit.
 
 Map Matching is the art of taking coordinates and aligning them along a road network. In the truck example above, the developer would hit their own truck routing API, give us the coordinates and then we'd return a Route the developer can plug into the Navigation SDK.
 
@@ -12,7 +12,7 @@ func navigationViewController(_ navigationViewController: NavigationViewControll
     }
 ```
 
-If the user were to go off route immediately after starting along their route, the Navigation SDK would fetch them a new route via the Mapbox Directions API. This completely defeats the purpose of using a custom truck profile.
+If the user were to go off route immediately after starting along their route, the Navigation SDK would fetch a new route via the Mapbox Directions API. This would throw the initial route out that contained the custom truck profile.
 
 ### Fetch a new route after rerouting
 
