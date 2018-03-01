@@ -832,10 +832,8 @@ extension RouteController: CLLocationManagerDelegate {
         if let accessToken = routeProgress.route.accessToken, let apiEndpoint = routeProgress.route.apiEndpoint, let host = apiEndpoint.host {
             directions = Directions(accessToken: accessToken, host: host)
         }
-        
-        let opts = NavigationRouteOptions(waypoints: options.waypoints, profileIdentifier: options.profileIdentifier)
 
-        routeTask = directions.calculate(opts) { [weak self] (waypoints, routes, error) in
+        routeTask = directions.calculate(options) { [weak self] (waypoints, routes, error) in
             defer {
                 self?.isRerouting = false
             }
