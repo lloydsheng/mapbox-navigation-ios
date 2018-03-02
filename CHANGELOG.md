@@ -7,6 +7,7 @@
 
 #### User Interface
 * `StepsViewController` 's convienence initalizer (`StepsViewController.init(routeProgress:)`) is now public. ([#1167](https://github.com/mapbox/mapbox-navigation-ios/pull/1167))
+* Various views and view controllers correctly mirror right-to-left in Hebrew. ([#1182](https://github.com/mapbox/mapbox-navigation-ios/pull/1182))
 
 ## v0.14.0 (February 22, 2018)
 
